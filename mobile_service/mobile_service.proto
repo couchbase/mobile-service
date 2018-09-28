@@ -1,0 +1,80 @@
+
+syntax = "proto3";
+
+package mobile_service;
+
+service MobileService {
+
+  rpc MetaKVGet(MetaKVPath) returns (MetaKVPair) {}
+
+  rpc MetaKVListAllChildren(MetaKVPath) returns (MetaKVPairs) {}
+
+  rpc MetaKVSet(MetaKVPair) returns (Empty) {}
+
+  rpc MetaKVAdd(MetaKVPair) returns (Empty) {}
+
+  rpc MetaKVDelete(MetaKVPair) returns (Empty) {}
+
+  rpc MetaKVRecursiveDelete(MetaKVPath) returns (Empty) {}
+
+  // Server-side streaming for all changes to MetaKV, stays open indefinitely
+  rpc MetaKVObserveChildren(MetaKVPath) returns (stream MetaKVPair) {}
+
+  // The client uses this to stream stats
+  rpc SendStats(stream Stats) returns (StatsReply) {}
+
+}
+
+message Gateway {
+
+  string uuid = 1;
+
+  string hostname = 2;
+
+}
+
+message Creds {
+
+  string username = 1;
+
+  string password = 2;
+
+}
+
+message Stats {
+
+  string num_changes_feeds = 1;
+
+  Gateway gateway = 2;
+
+  Creds creds = 3;
+
+}
+
+message StatsReply {}
+
+message Empty {}
+
+
+message MetaKVPath {
+
+    string path = 1;
+
+}
+
+message MetaKVPair {
+
+    bytes value = 1;
+
+    string path = 2;
+
+    string rev = 3;
+
+}
+
+message MetaKVPairs {
+
+    repeated MetaKVPair items = 1;
+
+}
+

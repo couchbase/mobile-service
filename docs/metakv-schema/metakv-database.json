@@ -1,0 +1,80 @@
+{
+    "allow_conflicts": false,
+    "bucket": "example_db",
+    "bucket_op_timeout_ms": 2500,
+    "import_docs": false,
+    "cacertpath": "/path/to/ca.cert",
+    "cache": {
+      "max_wait_pending": 5000,
+      "max_num_pending": 10000,
+      "max_wait_skipped": 3600000,
+      "enable_star_channel": true,
+      "channel_cache_max_length": 500,
+      "channel_cache_min_length": 50,
+      "channel_cache_expiry": 60
+    },
+    "certpath": "/path/to/client.cert",
+    "enable_shared_bucket_access": true,
+    "event_handlers": {
+      "document_changed": [
+        {
+          "filter": "function TODOAddExample(p1, p2) { }",
+          "handler": "webhook",
+          "timeout": 60,
+          "url": "http://localhost:8080/webhook_handler"
+        }
+      ],
+      "max_processes": 500,
+      "wait_for_process": "100"
+    },
+    "import_filter": "function(doc) {return false;}",
+    "keypath": "/path/to/client_private_key.key",
+    "local_doc_expiry_secs": 90,
+    "num_index_replicas": 1,
+    "oidc": {
+      "default_provider": "google",
+      "providers": {
+        "google": {
+          "issuer": "https://accounts.google.com",
+          "client_id": "YOUR_CLIENT_ID",
+          "validation_key": "YOUR_CLIENT_SECRET",
+          "signing_method": "HMAC-SHA1",
+          "callback_url": "http://localhost:4984/default/_oidc_callback",
+          "register": "true",
+          "disable_session": "false",
+          "scope": [
+            "openid email"
+          ],
+          "include_access": "false",
+          "user_prefix": "SyncGateway",
+          "discovery_url": "[issuer]/.well-known/openid-configuration2",
+          "disable_cfg_validation": "false"
+        }
+      }
+    },
+    "pool": "default",
+    "rev_cache_size": 5000,
+    "revs_limit": 1000,
+    "roles": {
+      "example_role": {
+        "admin_channels": [
+          "*"
+        ]
+      }
+    },
+    "session_cookie_name": "SyncGatewaySession",
+    "sync": "function(doc, oldDoc) {channel(doc.channels);}",
+    "users": {
+      "example_user": {
+        "password": "example_password",
+        "admin_channels": [
+          "*"
+        ],
+        "admin_roles": [
+          "example_role"
+        ],
+        "disabled": false
+      }
+    },
+    "use_views": false
+}

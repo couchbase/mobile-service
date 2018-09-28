@@ -1,0 +1,49 @@
+{
+    "log": ["HTTP"],
+    "logFilePath": "stderr",
+    "logging": {
+      "log_file_path": "/path/to/logs",
+      "redaction_level": "none",
+      "console": {
+        "log_level": "info",
+        "log_keys": [
+          "HTTP"
+        ],
+        "color_enabled": false
+      },
+      "error": {
+        "enabled": true,
+        "rotation": {
+          "max_size": 100,
+          "max_age": 360,
+          "localtime": false
+        }
+      }
+    },
+    "maxCouchbaseConnections": 16,
+    "maxCouchbaseOverflow": 16,
+    "couchbaseKeepaliveInterval": 7200,
+    "maxFileDescriptors": 5000,
+    "maxHeartbeat": 30,
+    "maxIncomingConnections": 1000,
+    "replicator_compression": 6,
+    "serverReadTimeout": 60,
+    "serverWriteTimeout": 60,
+    "slowServerCallWarningThreshold": 200,
+    "facebook": {
+        "register": false
+    },
+    "compressResponses": false,
+    "CORS": {
+        "Origin": [
+          "http://localhost:8000"
+        ],
+        "LoginOrigin": [
+          "http://localhost:8000"
+        ],
+        "Headers": [
+          "Content-Type"
+        ],
+        "MaxAge": 1728000
+      }
+}

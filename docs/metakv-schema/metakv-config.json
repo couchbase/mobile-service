@@ -1,0 +1,21 @@
+{
+    "mobile": {
+        "gateway": {
+            "config": {
+                "general": "json:metakv-general-schema.json",
+                "listener": "json:metakv-listener-schema.json",
+                "databases": {
+                    "db-example-1": "json:metakv-database-schema.json"
+                },
+                "replications": {
+                    "repl-example-1": "json:metakv-replication-schema.json"
+                }
+            }
+        },
+        "service": {
+            "mobilecluster": {
+                "mobile-service-example-1": "json:metakv-mobile-service-schema.json"
+            }
+        }
+    }
+}

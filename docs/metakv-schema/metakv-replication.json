@@ -1,0 +1,11 @@
+{
+    "replication_id": "example_replication",
+    "source": "https://example-sync-gateway2:4984/example-db",
+    "target": "example-db",
+    "continuous": false,
+    "changes_feed_limit": "500",
+    "filter": "sync_gateway/bychannel",
+    "query_params": [
+      "channels=example-channel"
+    ]
+  }
