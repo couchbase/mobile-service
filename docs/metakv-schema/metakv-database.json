@@ -76,5 +76,6 @@
         "disabled": false
       }
     },
-    "use_views": false
+    "use_views": false,
+    "metadata_purge_interval_read_only_seconds": 259200
 }

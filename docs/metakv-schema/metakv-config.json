@@ -13,7 +13,7 @@
             }
         },
         "service": {
-            "mobilecluster": {
+            "mobile-cluster": {
                 "mobile-service-example-1": "json:metakv-mobile-service-schema.json"
             }
         }
