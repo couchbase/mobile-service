@@ -8,7 +8,7 @@ import (
 
 	"context"
 
-	"github.com/couchbase/mobile-mds/mobile_service"
+	"github.com/couchbase/mobile-service/mobile_service"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"github.com/couchbase/cbauth/metakv"

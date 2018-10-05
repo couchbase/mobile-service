@@ -1,0 +1,12 @@
+{
+  "connected-via": "mobile-service-1",
+  "connection-state": "connected|rebalancing|unknown",
+  "uuid": "dbe334",
+  "first_seen": "2014.08.29 05:35:19:7600000",
+  "config_rev": "b2c44",
+  "db_states": {
+    "example-database-1": {
+      "state": "warming_up"
+    }
+  }
+}
