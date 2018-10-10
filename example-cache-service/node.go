@@ -18,7 +18,6 @@ import (
 	"fmt"
 
 	"github.com/couchbase/cbauth/service"
-	"log"
 )
 
 var (
