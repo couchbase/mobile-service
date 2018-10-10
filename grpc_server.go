@@ -47,7 +47,7 @@ func (s *server) DeleteStaleGatewayEntries()  {
 
 		log.Printf("Checking for stale entries in s.LastSeenGateways.StaleEntries")
 
-		staleEntries := s.LastSeenGateways.StaleEntries(time.Second * 30)
+		staleEntries := s.LastSeenGateways.StaleEntries(time.Second * 10)
 
 		log.Printf("staleEntries: %v", staleEntries)
 

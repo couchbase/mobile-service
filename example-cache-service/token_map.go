@@ -76,6 +76,9 @@ func MaybeCreateInitialTokenMap() {
 }
 
 func (tm TokenMap) UpdateServers(newServers []service.NodeID) {
+
+	log.Printf("TokenMap UpdateServers() called with: %v", newServers)
+
 	removed := serversMap(tm.Servers)
 	added := serversMap(newServers)
 

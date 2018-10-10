@@ -120,10 +120,16 @@ func (m *Mgr) GetNodeInfo() (*service.NodeInfo, error) {
 		Opaque:   opaque,
 	}
 
+	log.Printf("GetNodeInfo() returning: %+v", info)
+
+
 	return info, nil
 }
 
 func (m *Mgr) Shutdown() error {
+
+	log.Printf("Shutdown() called, calling os.Exit()")
+
 	os.Exit(0)
 
 	return nil
@@ -132,17 +138,26 @@ func (m *Mgr) Shutdown() error {
 func (m *Mgr) GetTaskList(rev service.Revision,
 	cancel service.Cancel) (*service.TaskList, error) {
 
+	log.Printf("GetTaskList called, rev: %v cancel: %v", rev, cancel)
+
 	state, err := m.wait(rev, cancel)
 	if err != nil {
 		return nil, err
 	}
 
-	return stateToTaskList(state), nil
+	taskList := stateToTaskList(state)
+
+	log.Printf("GetTaskList returning: %+v", taskList)
+
+	return taskList, nil
 }
 
 func (m *Mgr) CancelTask(id string, rev service.Revision) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
+
+	log.Printf("CancelTask called.  id: %v, rev: %v", id, rev)
+
 
 	tasks := stateToTaskList(m.state).Tasks
 	task := (*service.Task)(nil)
@@ -174,6 +189,8 @@ func (m *Mgr) CancelTask(id string, rev service.Revision) error {
 func (m *Mgr) GetCurrentTopology(rev service.Revision,
 	cancel service.Cancel) (*service.Topology, error) {
 
+	log.Printf("ServiceManager.GetCurrentTopology() called rev: %+v", rev)
+
 	state, err := m.wait(rev, cancel)
 	if err != nil {
 		return nil, err
@@ -188,7 +205,7 @@ func (m *Mgr) PrepareTopologyChange(change service.TopologyChange) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	fmt.Printf("PrepareTopologyChange() called with: %+v", change)
+	log.Printf("PrepareTopologyChange() called with: %+v", change)
 
 	if m.state.rebalanceID != "" {
 		return service.ErrConflict
@@ -205,7 +222,7 @@ func (m *Mgr) StartTopologyChange(change service.TopologyChange) error {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	fmt.Printf("StartTopologyChange() called with: %+v", change)
+	log.Printf("StartTopologyChange() called with: %+v", change)
 
 
 	if m.state.rebalanceID != change.ID || m.rebalancer != nil {

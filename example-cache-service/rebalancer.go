@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"github.com/couchbase/cbauth/service"
+	"log"
 )
 
 type DoneCallback func(err error, cancel <-chan struct{})
@@ -60,6 +61,9 @@ func (r *Rebalancer) Cancel() {
 }
 
 func (r *Rebalancer) doRebalance() {
+
+	log.Printf("doRebalance() called")
+
 	defer close(r.done)
 
 	isInitial := (len(r.tokens.Servers) == 0)
@@ -104,9 +108,14 @@ func (r *Rebalancer) updateHostNames() {
 }
 
 func (r *Rebalancer) updateTokenMap() {
+
+	log.Printf("updateTokenMap()")
+
 	nodes := []service.NodeID(nil)
 
 	for _, node := range r.change.KeepNodes {
+		log.Printf("updateTokenMap() adding node: %+v", node)
+
 		nodes = append(nodes, node.NodeInfo.NodeID)
 	}
 

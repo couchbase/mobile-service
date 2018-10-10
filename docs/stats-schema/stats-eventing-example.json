@@ -1,0 +1,116 @@
+[
+  {
+    "event_processing_stats": {
+      "ADHOC_DOC_TIMER_RESPONSES_RECEIVED": 2,
+      "AGG_DOC_TIMER_FEEDBACK_QUEUE_CAP": 30000,
+      "AGG_DOC_TIMER_FEEDBACK_QUEUE_SIZE": 0,
+      "AGG_MESSAGES_SENT_TO_WORKER": 576,
+      "AGG_QUEUE_MEMORY": 0,
+      "AGG_QUEUE_MEMORY_CAP": 3221225472,
+      "AGG_QUEUE_SIZE": 0,
+      "AGG_QUEUE_SIZE_CAP": 300000,
+      "DCP_MUTATION": 4,
+      "DCP_MUTATION_SENT_TO_WORKER": 3,
+      "DCP_SNAPSHOT": 4,
+      "DCP_STREAMREQ": 1024,
+      "DCP_STREAM_REQ_COUNTER": 1024,
+      "EXECUTION_STATS": 138,
+      "FAILURE_STATS": 138,
+      "HANDLER_CODE": 3,
+      "LATENCY_STATS": 138,
+      "LCB_EXCEPTION_STATS": 138,
+      "LOG_LEVEL": 3,
+      "SOURCE_MAP": 3,
+      "THR_COUNT": 3,
+      "THR_MAP": 3,
+      "V8_INIT": 3,
+      "V8_LOAD": 3
+    },
+    "events_remaining": {
+      "dcp_backlog": 0
+    },
+    "execution_stats": {
+      "agg_queue_memory": 0,
+      "agg_queue_size": 0,
+      "cron_timer_msg_counter": 0,
+      "dcp_delete_msg_counter": 0,
+      "dcp_mutation_msg_counter": 3,
+      "doc_timer_create_failure": 0,
+      "doc_timer_msg_counter": 0,
+      "doc_timer_responses_sent": 0,
+      "enqueued_cron_timer_msg_counter": 0,
+      "enqueued_dcp_delete_msg_counter": 0,
+      "enqueued_dcp_mutation_msg_counter": 3,
+      "enqueued_doc_timer_msg_counter": 0,
+      "feedback_queue_size": 0,
+      "lcb_retry_failure": 0,
+      "messages_parsed": 567,
+      "on_delete_failure": 0,
+      "on_delete_success": 0,
+      "on_update_failure": 0,
+      "on_update_success": 3,
+      "timestamp": {
+        "4262": "2018-10-02T18:00:12Z",
+        "4269": "2018-10-02T18:00:12Z",
+        "4270": "2018-10-02T18:00:12Z"
+      },
+      "uv_try_write_failure_counter": 0
+    },
+    "failure_stats": {
+      "app_worker_setting_events_lost": 0,
+      "bucket_op_exception_count": 0,
+      "checkpoint_failure_count": 0,
+      "cron_timer_events_lost": 0,
+      "dcp_events_lost": 0,
+      "debugger_events_lost": 0,
+      "delete_events_lost": 0,
+      "doc_timer_events_lost": 0,
+      "mutation_events_lost": 0,
+      "n1ql_op_exception_count": 0,
+      "timeout_count": 0,
+      "timer_events_lost": 0,
+      "timestamp": {
+        "4262": "2018-10-02T18:00:12Z",
+        "4269": "2018-10-02T18:00:12Z",
+        "4270": "2018-10-02T18:00:12Z"
+      },
+      "v8worker_events_lost": 0
+    },
+    "function_name": "Test",
+    "gocb_creds_request_counter": 8,
+    "internal_vb_distribution_stats": {
+      "worker_Test_0": "[0-341]",
+      "worker_Test_1": "[342-682]",
+      "worker_Test_2": "[683-1023]"
+    },
+    "latency_percentile_stats": {
+      "100": 1000,
+      "50": 1000,
+      "80": 1000,
+      "90": 1000,
+      "95": 1000,
+      "99": 1000
+    },
+    "lcb_creds_request_counter": 12,
+    "lcb_exception_stats": {},
+    "planner_stats": [
+      {
+        "host_name": "127.0.0.1:8096",
+        "start_vb": 0,
+        "vb_count": 1024
+      }
+    ],
+    "vb_distribution_stats_from_metadata": {
+      "127.0.0.1:8096": {
+        "worker_Test_0": "[0-341]",
+        "worker_Test_1": "[342-682]",
+        "worker_Test_2": "[683-1023]"
+      }
+    },
+    "worker_pids": {
+      "worker_Test_0": 4262,
+      "worker_Test_1": 4270,
+      "worker_Test_2": 4269
+    }
+  }
+]

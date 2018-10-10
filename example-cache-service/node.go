@@ -18,6 +18,7 @@ import (
 	"fmt"
 
 	"github.com/couchbase/cbauth/service"
+	"log"
 )
 
 var (
@@ -42,6 +43,7 @@ func SetNodeHostName(node service.NodeID, host string) {
 }
 
 func GetNodeHostName(node service.NodeID) string {
+
 	host := ""
 	_, err := MetakvGet(hostPath(node), &host)
 	if err != nil {
