@@ -7,6 +7,11 @@ import (
 	"os"
 )
 
+/**
+
+NOT WORKING -- See ServiceManager2.go
+
+ */
 
 type ServiceManager struct {
 	NodeInfo *service.NodeInfo

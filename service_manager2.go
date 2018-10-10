@@ -23,6 +23,13 @@ import (
 	"github.com/couchbase/cbauth/service"
 )
 
+// This is a copy of the example caching service which is being used as a starting point for the mobile
+// service for the purposes of interfacing with ns-server's service API.
+//
+// The "tokens" are superfluous and residue from the example caching service, and should be ripped out.
+
+
+
 var (
 	MyNode service.NodeID
 	MyHost string
