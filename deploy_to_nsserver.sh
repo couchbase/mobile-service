@@ -1,3 +1,3 @@
-cd cmd/mobile-mds
-go build
-cp mobile-mds /Users/tleyden/Development/couchbase_src/install/bin/mobile-mds
+cd cmd/cli
+go build -o mobile-service
+cp mobile-service /Users/tleyden/Development/couchbase_src/install/bin/mobile-service
