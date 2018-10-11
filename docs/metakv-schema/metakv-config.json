@@ -4,6 +4,7 @@
             "config": {
                 "general": "json:metakv-general-schema.json",
                 "listener": "json:metakv-listener-schema.json",
+                "internal": "json:metakv-internal.json",
                 "databases": {
                     "database-1": "json:metakv-database-schema.json",
                     "database-2": "json:metakv-database-schema.json"

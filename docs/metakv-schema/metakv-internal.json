@@ -1,0 +1,4 @@
+{
+  "metadata_purge_interval_hours": 36,
+  "stats_push_frequency_secs": 10
+}
