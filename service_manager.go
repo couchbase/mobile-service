@@ -903,6 +903,8 @@ func (r *Rebalancer) doRebalance() {
 		r.fakeProgress()
 	}
 
+	r.removeDeadNodesMetaKV()
+
 	r.updateHostNames()
 	r.updateTokenMap()
 	r.cb.done(nil, r.cancel)
@@ -924,6 +926,23 @@ func (r *Rebalancer) fakeProgress() {
 			return
 		}
 	}
+}
+
+func (r *Rebalancer) removeDeadNodesMetaKV() {
+
+	log.Printf("Rebalancer removeDeadNodesMetaKV() called")
+
+	// For each entry in ejected nodes, delete /mobile/state/<node-uuid>
+	for _, ejectedNode := range r.change.EjectNodes {
+		keypath := fmt.Sprintf("/mobile/state/%s/", ejectedNode.NodeID)
+		log.Printf("Metakv delete recursive: %v", keypath)
+		if err := metakv.RecursiveDelete(keypath); err != nil {
+			log.Printf("Error deleting metkv key: %+v.  Err: %v", keypath, err)
+		}
+	}
+
+
+
 }
 
 func (r *Rebalancer) updateHostNames() {
