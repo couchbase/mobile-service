@@ -45,5 +45,8 @@
           "Content-Type"
         ],
         "MaxAge": 1728000
-      }
+      },
+    "deprecated": {
+      "enable_legacy_static_file_config": true
+    }
 }
