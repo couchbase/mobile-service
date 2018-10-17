@@ -1,0 +1,25 @@
+[%hardbreaks]
+:toc: left
+:toclevels: 3
+
+
+== Local Build
+
+```
+$ repo init -u git://github.com/couchbase/manifest -m branch-master.xml
+$ repo sync
+$ make
+```
+
+See https://github.com/couchbase/tlm for instructions
+
+
+== Toy Build (Jenkins)
+
+. Go to http://server.jenkins.couchbase.com/view/Toys/job/toy-unix
+. Build with Parameters
+. Use params
+.. RELEASE: mad-hatter
+.. VERSION: 6.5.0
+.. MANIFEST_FILE: couchbase-server/mad-hatter.xml
+.. MANIFEST_REPO: git://github.com/couchbase/manifest (unless you want to point to your own fork)

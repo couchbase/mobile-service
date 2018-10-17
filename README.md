@@ -22,6 +22,10 @@ https://github.com/tleyden/ns_server
 
 on the branch: **sg_cbs_integration3**
 
+## Build instructions
+
+See docs/build
+
 ## How to run standalone
 
 1. Start Couchbase Server
