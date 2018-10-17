@@ -11,6 +11,18 @@ $ repo sync
 $ make
 ```
 
+Hack the top level `CMakeLists.txt` file to add:
+
+```
+ADD_SUBDIRECTORY(goproj/src/github.com/couchbase/mobile-service)
+```
+
+Then build:
+
+```
+$ make -j 6
+```
+
 See https://github.com/couchbase/tlm for instructions
 
 
