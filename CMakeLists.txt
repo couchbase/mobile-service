@@ -8,4 +8,4 @@ GoInstall (TARGET mobile-service PACKAGE github.com/couchbase/mobile-service/cli
   GOPATH "${PROJECT_SOURCE_DIR}/../../../.." "${GODEPSDIR}"
   GOTAGS ""
   INSTALL_PATH bin OUTPUT mobile-service
-  GOVERSION 1.11)
+  GOVERSION 1.10.3)
