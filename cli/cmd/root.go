@@ -19,7 +19,6 @@ var (
 
 const (
 	metaKvKeyPathRoot = "/mobile/"
-	grpcListenPort    = 50051
 	initCBGT          = false
 )
 
@@ -33,7 +32,7 @@ var rootCmd = &cobra.Command{
 		fmt.Printf("Mobile-service starting up.  NodeUUID: %s CouchbaseServerURL: %s.  DataDir: %v\n", NodeUUID, CouchbaseServerURL, DataDir)
 
 		// Start GRPC server
-		go mobile_mds.StartGrpcServer(service.NodeID(NodeUUID), grpcListenPort)
+		go mobile_mds.StartGrpcServer(service.NodeID(NodeUUID), mobile_mds.PortGrpcTls)
 
 		// Start service manager
 		hostport, err := mobile_mds.StripHttpScheme(CouchbaseServerURL)
