@@ -104,3 +104,12 @@ func StripHttpScheme(urlWithScheme string) (hostPort string, err error) {
 	hostPort = fmt.Sprintf("%s", u.Host)
 	return hostPort, nil
 }
+
+
+func AddTrailingSlash(initial string) string {
+	if strings.HasSuffix(initial, "/") {
+		return initial
+	}
+	return fmt.Sprintf("%s/", initial)
+}
+
