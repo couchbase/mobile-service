@@ -31,14 +31,20 @@ var rootCmd = &cobra.Command{
 
 		fmt.Printf("Mobile-service starting up.  NodeUUID: %s CouchbaseServerURL: %s.  DataDir: %v\n", NodeUUID, CouchbaseServerURL, DataDir)
 
-		// Start GRPC server
-		go mobile_mds.StartGrpcServer(service.NodeID(NodeUUID), mobile_mds.PortGrpcTls)
-
 		// Start service manager
 		hostport, err := mobile_mds.StripHttpScheme(CouchbaseServerURL)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))
 		}
+
+		grpcPort, err := mobile_mds.CalculateGrpcPort(hostport)
+		if err != nil {
+			panic(fmt.Sprintf("ServiceManager error: %v", err))
+		}
+
+		// Start GRPC server
+		go mobile_mds.StartGrpcServer(service.NodeID(NodeUUID), grpcPort)
+
 		hostportOffset, err := mobile_mds.AddPortOffset(hostport, 100)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))

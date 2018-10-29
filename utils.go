@@ -95,6 +95,20 @@ func AddPortOffset(hostPort string, offset int) (hostPortWithOffset string, err 
 
 }
 
+func CalculateGrpcPort(hostPort string) (grpcListenPort int, err error) {
+	if !strings.Contains(hostPort, ":") {
+		return 0, fmt.Errorf("Expected : followed by port")
+	}
+
+	hostPortComponents := strings.Split(hostPort, ":")
+	port := hostPortComponents[1]
+	portInt, err := strconv.Atoi(port)
+	if err != nil {
+		return 0, err
+	}
+	return PortGrpcTlsOffset + portInt, nil
+}
+
 // http://127.0.0.1:9000 -> 127.0.0.1:9000
 func StripHttpScheme(urlWithScheme string) (hostPort string, err error) {
 	u, err := url.Parse(urlWithScheme)

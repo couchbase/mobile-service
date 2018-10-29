@@ -191,6 +191,8 @@ func RevString(rev interface{}) (string, error) {
 
 func (s *server) MetaKVSet(context context.Context, metaKVPair *mobile_service.MetaKVPair) (*mobile_service.Empty, error) {
 
+	// TODO: verify that they are under the /mobile key space
+
 	log.Printf("Updating key pair: %+v", metaKVPair)
 
 	// TODO: pass in rev from the metaKVPair.  Running into errors when trying to go from interface{} -> string -> interface{}
@@ -320,16 +322,16 @@ func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
 
 	var listener net.Listener
 	var err error
-	startPort := grpcListenPort
 
 	boundListener := false
-	for port := startPort; port < (startPort + 1000); port++ {
-		listener, err = net.Listen("tcp", fmt.Sprintf(":%d", port))
+	for {
+		listener, err = net.Listen("tcp", fmt.Sprintf(":%d", grpcListenPort))
 		if err != nil {
-			log.Printf("StartGrpcServer unable to listen on port %d.  Trying port %d", port, port+1)
+			log.Printf("StartGrpcServer unable to listen on port %d.  Retrying", grpcListenPort)
+			time.Sleep(time.Second * 5)
 			continue
 		}
-		log.Printf("StartGrpcServer listening on port: %d", port)
+		log.Printf("StartGrpcServer listening on port: %d", grpcListenPort)
 		boundListener = true
 		break
 	}

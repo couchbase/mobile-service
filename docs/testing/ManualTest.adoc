@@ -1,0 +1,139 @@
+[%hardbreaks]
+:toc: left
+:toclevels: 3
+
+
+== Demo
+
+=== Setup Couchbase Server
+
+==== Start server
+
+```
+$ ./cluster_run -n 2
+```
+
+==== Setup node 1
+
+http://localhost:9000[localhost:9000]
+
+==== Join node 2
+
+http://localhost:9001[localhost:9001]
+
+==== Rebalance
+
+Do rebalance
+
+==== Create User
+
+Skip this step, just use Administrator / Password
+
+
+==== Create bucket
+
+Create a bucket named `database-1`
+
+=== Load general + listener config into MetaKV (no databases)
+
+```
+go run main.go config metakv set /mobile/gateway/config/general --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-general.json
+go run main.go config metakv set /mobile/gateway/config/listener --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-listener.json
+```
+
+==== Show metakv config
+
+```
+go run main.go config metakv list /mobile/
+```
+
+```
+go run main.go config metakv get /mobile/gateway/config/general | jq .
+go run main.go config metakv get /mobile/gateway/config/listener | jq .
+
+```
+
+=== Start sync gateway and point to cluster
+
+```
+go run main.go serve --uuid gw1 -c "http://localhost:9000,localhost:9001" -u "Administrator" -p "password"
+```
+
+=== Show that SG isn't serving up any databases
+
+```
+curl localhost:4985/_config | jq .
+```
+
+=== Add a DB config to MetaKV
+
+```
+go run main.go config metakv set /mobile/gateway/config/databases/database-1 --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-database-1.json
+```
+
+=== Show that SG is serving up that DB
+
+```
+curl localhost:4985/_config | jq .
+curl localhost:4985/database-1/ | jq .
+```
+
+=== Add a 2nd SG until it connects to CBS node #2
+
+NOTE: may need a few restarts until it connects to other mobile service node
+
+```
+go run main.go --uuid gw2 --portoffset 10 serve -c "http://localhost:9000,localhost:9001" -u "Administrator" -p "password"
+```
+
+=== Show the MetaKV state that shows the list of known gateways
+
+At this point, each gateway should be connected to a different mobile-service node
+
+```
+go run main.go config metakv list /mobile/state/
+```
+
+=== Show that 2nd SG is serving up that DB
+
+
+```
+curl localhost:4995/_config | jq .
+curl localhost:4995/database-1/ | jq .
+```
+
+=== Remove CBS node #1 from the cluster
+
+* Go to UI
+* Remove server
+* Rebalance --- while this is happening, show the GRPC protobuf for metakv ops
+
+
+=== Show the MetaKV state that shows the list of known gateways
+
+At this point, each gateway should be connected to the same mobile-service node
+
+```
+go run main.go config metakv list /mobile/state/
+```
+
+=== Show that both SGs are still serving up traffic
+
+
+```
+curl localhost:4985/database-1/ | jq .
+curl localhost:4995/database-1/ | jq .
+```
+
+=== Kill a gateway
+
+Ctl-C on the CLI
+
+
+=== Show that it's removed from the metakv list
+
+```
+go run main.go config metakv list /mobile/state/
+```
+
+
