@@ -37,26 +37,27 @@ Create a bucket named `database-1`
 === Load general + listener config into MetaKV (no databases)
 
 ```
-go run main.go config metakv set /mobile/gateway/config/general --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-general.json
-go run main.go config metakv set /mobile/gateway/config/listener --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-listener.json
+export CBSERVER="http://ec2-34-224-25-200.compute-1.amazonaws.com:8091,ec2-34-203-241-132.compute-1.amazonaws.com:8091"
+./sg config metakv set /mobile/gateway/config/general -c "$CBSERVER" --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-general.json
+./sg config metakv set /mobile/gateway/config/listener -c "$CBSERVER" --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-listener.json
 ```
 
 ==== Show metakv config
 
 ```
-go run main.go config metakv list /mobile/
+./sg config metakv list /mobile/ -c "$CBSERVER"
 ```
 
 ```
-go run main.go config metakv get /mobile/gateway/config/general | jq .
-go run main.go config metakv get /mobile/gateway/config/listener | jq .
+./sg config metakv get /mobile/gateway/config/general -c "$CBSERVER" | jq .
+./sg config metakv get /mobile/gateway/config/listener -c "$CBSERVER" | jq .
 
 ```
 
 === Start sync gateway and point to cluster
 
 ```
-go run main.go serve --uuid gw1 -c "http://localhost:9000,localhost:9001" -u "Administrator" -p "password"
+./sg serve --uuid gw1 -u "Administrator" -p "password" -c "$CBSERVER"
 ```
 
 === Show that SG isn't serving up any databases
@@ -68,7 +69,7 @@ curl localhost:4985/_config | jq .
 === Add a DB config to MetaKV
 
 ```
-go run main.go config metakv set /mobile/gateway/config/databases/database-1 --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-database-1.json
+./sg config metakv set /mobile/gateway/config/databases/database-1 --input-file-path /Users/tleyden/Development/sync_gateway/godeps/src/github.com/couchbase/sync_gateway/examples/mercury/metakv-database-1.json -c "$CBSERVER"
 ```
 
 === Show that SG is serving up that DB
@@ -83,7 +84,8 @@ curl localhost:4985/database-1/ | jq .
 NOTE: may need a few restarts until it connects to other mobile service node
 
 ```
-go run main.go --uuid gw2 --portoffset 10 serve -c "http://localhost:9001,localhost:9000" -u "Administrator" -p "password"
+export CBSERVER="http://ec2-34-203-241-132.compute-1.amazonaws.com:8091,ec2-34-224-25-200.compute-1.amazonaws.com:8091"
+./sg --uuid gw2 --portoffset 10 serve -u "Administrator" -p "password" -c "$CBSERVER"
 ```
 
 === Show the MetaKV state that shows the list of known gateways
@@ -91,7 +93,7 @@ go run main.go --uuid gw2 --portoffset 10 serve -c "http://localhost:9001,localh
 At this point, each gateway should be connected to a different mobile-service node
 
 ```
-go run main.go config metakv list /mobile/state/
+./sg config metakv list /mobile/state/ -c "$CBSERVER"
 ```
 
 === Show that 2nd SG is serving up that DB
@@ -114,7 +116,7 @@ curl localhost:4995/database-1/ | jq .
 At this point, each gateway should be connected to the same mobile-service node
 
 ```
-go run main.go config metakv list /mobile/state/
+./sg config metakv list /mobile/state/ -c "$CBSERVER"
 ```
 
 === Show that both SGs are still serving up traffic
@@ -134,7 +136,7 @@ Ctl-C on the CLI
 === Show that it's removed from the metakv list
 
 ```
-go run main.go config metakv list /mobile/state/
+./sg config metakv list /mobile/state/ -c "$CBSERVER"
 ```
 
 === Restart Couchbase Server
