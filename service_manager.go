@@ -919,7 +919,7 @@ func (r *Rebalancer) fakeProgress() {
 
 	for i := 0; i < seconds; i++ {
 		select {
-		case <-time.After(1 * time.Second):
+		case <-time.After(1 * time.Millisecond):
 			progress += increment
 			r.cb.progress(progress, r.cancel)
 		case <-r.cancel:
