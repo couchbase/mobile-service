@@ -136,3 +136,7 @@ Ctl-C on the CLI
 ```
 go run main.go config metakv list /mobile/state/
 ```
+
+=== Restart Couchbase Server
+
+=== Verify remaining Sync Gateway node recovers from downtime

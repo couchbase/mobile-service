@@ -38,6 +38,7 @@ var rootCmd = &cobra.Command{
 		}
 
 		grpcPort, err := mobile_mds.CalculateGrpcPort(hostport)
+		fmt.Printf("Calculated grpc port to be: %v", grpcPort)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))
 		}

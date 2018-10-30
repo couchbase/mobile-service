@@ -106,6 +106,7 @@ func CalculateGrpcPort(hostPort string) (grpcListenPort int, err error) {
 	if err != nil {
 		return 0, err
 	}
+	fmt.Printf("Calculating grcp port by adding %d and %d", PortGrpcTlsOffset, portInt)
 	return PortGrpcTlsOffset + portInt, nil
 }
 
