@@ -83,7 +83,7 @@ curl localhost:4985/database-1/ | jq .
 NOTE: may need a few restarts until it connects to other mobile service node
 
 ```
-go run main.go --uuid gw2 --portoffset 10 serve -c "http://localhost:9000,localhost:9001" -u "Administrator" -p "password"
+go run main.go --uuid gw2 --portoffset 10 serve -c "http://localhost:9001,localhost:9000" -u "Administrator" -p "password"
 ```
 
 === Show the MetaKV state that shows the list of known gateways
@@ -125,6 +125,7 @@ curl localhost:4985/database-1/ | jq .
 curl localhost:4995/database-1/ | jq .
 ```
 
+
 === Kill a gateway
 
 Ctl-C on the CLI
@@ -135,5 +136,3 @@ Ctl-C on the CLI
 ```
 go run main.go config metakv list /mobile/state/
 ```
-
-
