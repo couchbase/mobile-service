@@ -1,10 +1,9 @@
-package mobile_mds
+package mobile_service
 
 import (
 	"fmt"
 	"net/url"
 	"strconv"
-
 	"strings"
 
 	"github.com/couchbase/cbauth"
@@ -120,11 +119,9 @@ func StripHttpScheme(urlWithScheme string) (hostPort string, err error) {
 	return hostPort, nil
 }
 
-
 func AddTrailingSlash(initial string) string {
 	if strings.HasSuffix(initial, "/") {
 		return initial
 	}
 	return fmt.Sprintf("%s/", initial)
 }
-

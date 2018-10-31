@@ -1,4 +1,4 @@
-package mobile_mds
+package mobile_service
 
 import (
 	"sync"

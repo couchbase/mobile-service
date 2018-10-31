@@ -1,7 +1,7 @@
 
 syntax = "proto3";
 
-package mobile_service;
+package mobile_service_grpc;
 
 service MobileService {
 

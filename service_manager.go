@@ -1,35 +1,32 @@
-package mobile_mds
+package mobile_service
 
 import (
+	"bytes"
+	"container/list"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
-	"sort"
-
-	"hash/crc32"
-
-	"bytes"
-	"container/list"
 	"os"
+	"sort"
 	"strings"
 	"sync"
 	"time"
 
+	"encoding/binary"
+
 	"github.com/couchbase/cbauth/metakv"
 	"github.com/couchbase/cbauth/service"
-	"encoding/binary"
 )
 
 // This is a copy of the example caching service which is being used as a starting point for the mobile
 // service for the purposes of interfacing with ns-server's service API.
 //
 // The "tokens" are superfluous and residue from the example caching service, and should be ripped out.
-
-
 
 var (
 	MyNode service.NodeID
@@ -941,8 +938,6 @@ func (r *Rebalancer) removeDeadNodesMetaKV() {
 		}
 	}
 
-
-
 }
 
 func (r *Rebalancer) updateHostNames() {
@@ -954,7 +949,6 @@ func (r *Rebalancer) updateHostNames() {
 		SetNodeHostName(id, host)
 	}
 }
-
 
 func (r *Rebalancer) updateTokenMap() {
 
@@ -970,7 +964,6 @@ func (r *Rebalancer) updateTokenMap() {
 
 	r.tokens.UpdateServers(nodes)
 }
-
 
 type HTTPAPI struct {
 	mgr   *Mgr
@@ -1113,7 +1106,6 @@ func (h *HTTPAPI) ListenAndServe() {
 	}
 }
 
-
 type Response struct {
 	writer http.ResponseWriter
 
@@ -1170,8 +1162,6 @@ func (resp *Response) Write() error {
 	return err
 }
 
-
-
 type Cleanup struct {
 	canceled bool
 	f        func()
@@ -1194,8 +1184,6 @@ func (c *Cleanup) Run() {
 func (c *Cleanup) Cancel() {
 	c.canceled = true
 }
-
-
 
 func SetNodeHostName(node service.NodeID, host string) {
 	currentHost := GetNodeHostName(node)

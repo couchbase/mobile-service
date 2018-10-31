@@ -1,38 +1,35 @@
-package mobile_mds
+package mobile_service
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net"
-
-	"context"
-
-	"github.com/couchbase/mobile-service/mobile_service"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"github.com/couchbase/cbauth/metakv"
-	"time"
-	"github.com/couchbase/cbauth/service"
-	"github.com/couchbase/cbauth"
-	"encoding/json"
-	"bytes"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/couchbase/cbauth"
+	"github.com/couchbase/cbauth/metakv"
+	"github.com/couchbase/cbauth/service"
+	msgrpc "github.com/couchbase/mobile-service/mobile_service_grpc"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
-type server struct{
-
+type server struct {
 	NodeUuid service.NodeID
 
 	LastSeenGateways *LastSeenMap
-
 }
 
 func NewServer(nodeUuid service.NodeID) *server {
 
 	s := server{
-		NodeUuid: nodeUuid,
+		NodeUuid:         nodeUuid,
 		LastSeenGateways: NewLastSeenMap(),
 	}
 
@@ -41,7 +38,7 @@ func NewServer(nodeUuid service.NodeID) *server {
 	return &s
 }
 
-func (s *server) DeleteStaleGatewayEntries()  {
+func (s *server) DeleteStaleGatewayEntries() {
 
 	for {
 
@@ -70,8 +67,7 @@ func (s *server) DeleteStaleGatewayEntries()  {
 
 }
 
-
-func (s *server) SendStats(stream mobile_service.MobileService_SendStatsServer) error {
+func (s *server) SendStats(stream msgrpc.MobileService_SendStatsServer) error {
 	for {
 		stats, err := stream.Recv()
 
@@ -104,12 +100,11 @@ func (s *server) SendStats(stream mobile_service.MobileService_SendStatsServer) 
 			continue
 		}
 
-
 		if err := s.RecordClientHeartbeat(stats); err != nil {
 			log.Printf("Error recording client heartbeat: %v", err)
 		}
 		if err == io.EOF {
-			return stream.SendAndClose(&mobile_service.StatsReply{})
+			return stream.SendAndClose(&msgrpc.StatsReply{})
 		}
 		if err != nil {
 			return err
@@ -119,7 +114,7 @@ func (s *server) SendStats(stream mobile_service.MobileService_SendStatsServer) 
 	return nil
 }
 
-func (s *server) RecordClientHeartbeat(stats *mobile_service.Stats) error {
+func (s *server) RecordClientHeartbeat(stats *msgrpc.Stats) error {
 
 	keypath := fmt.Sprintf("/mobile/state/%s/%s", s.NodeUuid, stats.Gateway.Uuid)
 
@@ -148,23 +143,23 @@ func (s *server) RecordClientHeartbeat(stats *mobile_service.Stats) error {
 
 }
 
-func (s *server) MetaKVGet(context context.Context, metaKVPath *mobile_service.MetaKVPath) (*mobile_service.MetaKVPair, error) {
+func (s *server) MetaKVGet(context context.Context, metaKVPath *msgrpc.MetaKVPath) (*msgrpc.MetaKVPair, error) {
 
 	val, rev, err := metakv.Get(metaKVPath.Path)
 	if err != nil {
-		return &mobile_service.MetaKVPair{}, err
+		return &msgrpc.MetaKVPair{}, err
 	}
 
 	revStr, err := RevString(rev)
 	if err != nil {
-		return &mobile_service.MetaKVPair{}, err
+		return &msgrpc.MetaKVPair{}, err
 	}
 	log.Printf("Rev marshalled: %s", string(revStr))
 
-	return &mobile_service.MetaKVPair{
+	return &msgrpc.MetaKVPair{
 		Value: val,
-		Rev: revStr,
-		Path: metaKVPath.Path,
+		Rev:   revStr,
+		Path:  metaKVPath.Path,
 	}, nil
 
 }
@@ -188,8 +183,7 @@ func RevString(rev interface{}) (string, error) {
 	return strconv.Unquote(string(revBytes))
 }
 
-
-func (s *server) MetaKVSet(context context.Context, metaKVPair *mobile_service.MetaKVPair) (*mobile_service.Empty, error) {
+func (s *server) MetaKVSet(context context.Context, metaKVPair *msgrpc.MetaKVPair) (*msgrpc.Empty, error) {
 
 	// TODO: verify that they are under the /mobile key space
 
@@ -200,63 +194,57 @@ func (s *server) MetaKVSet(context context.Context, metaKVPair *mobile_service.M
 
 		log.Printf("Error updating key pair: %+v.  Err: %v", metaKVPair, err)
 
-		return &mobile_service.Empty{}, err
+		return &msgrpc.Empty{}, err
 	}
 
 	log.Printf("Updated key pair: %+v", metaKVPair)
 
-
-	return &mobile_service.Empty{}, nil
+	return &msgrpc.Empty{}, nil
 
 }
 
-
-func (s *server) MetaKVAdd(context context.Context, metaKVPair *mobile_service.MetaKVPair) (*mobile_service.Empty, error) {
-
+func (s *server) MetaKVAdd(context context.Context, metaKVPair *msgrpc.MetaKVPair) (*msgrpc.Empty, error) {
 
 	if err := metakv.Add(metaKVPair.Path, []byte(metaKVPair.Value)); err != nil {
-		return &mobile_service.Empty{}, err
+		return &msgrpc.Empty{}, err
 	}
 
-	return &mobile_service.Empty{}, nil
+	return &msgrpc.Empty{}, nil
 
 }
 
-func (s *server) MetaKVDelete(context context.Context, metaKVPair *mobile_service.MetaKVPair) (*mobile_service.Empty, error) {
+func (s *server) MetaKVDelete(context context.Context, metaKVPair *msgrpc.MetaKVPair) (*msgrpc.Empty, error) {
 
 	log.Printf("Deleting key pair: %+v", metaKVPair)
 
 	// TODO: pass in rev from the metaKVPair.  Running into errors when trying to go from interface{} -> string -> interface{}
 	if err := metakv.Delete(metaKVPair.Path, nil); err != nil {
 		log.Printf("Error deleting key pair: %+v.  Err: %v", metaKVPair, err)
-		return &mobile_service.Empty{}, err
+		return &msgrpc.Empty{}, err
 	}
 
 	log.Printf("Deleted key pair: %+v", metaKVPair)
 
-
-	return &mobile_service.Empty{}, nil
+	return &msgrpc.Empty{}, nil
 
 }
 
-
-func (s *server) MetaKVRecursiveDelete(context context.Context, metaKVPath *mobile_service.MetaKVPath) (*mobile_service.Empty, error) {
+func (s *server) MetaKVRecursiveDelete(context context.Context, metaKVPath *msgrpc.MetaKVPath) (*msgrpc.Empty, error) {
 	if err := metakv.RecursiveDelete(metaKVPath.Path); err != nil {
 		log.Printf("Error deleting key path: %+v.  Err: %v", metaKVPath, err)
-		return &mobile_service.Empty{}, err
+		return &msgrpc.Empty{}, err
 	}
-	return &mobile_service.Empty{}, nil
+	return &msgrpc.Empty{}, nil
 }
 
-
-func (s *server) MetaKVListAllChildren(context context.Context, metaKVPath *mobile_service.MetaKVPath) (*mobile_service.MetaKVPairs, error) {
+func (s *server) MetaKVListAllChildren(context context.Context, metaKVPath *msgrpc.MetaKVPath) (*msgrpc.MetaKVPairs, error) {
 
 	entries, err := metakv.ListAllChildren(metaKVPath.Path)
 	if err != nil {
-		return &mobile_service.MetaKVPairs{}, err
+		return &msgrpc.MetaKVPairs{}, err
 	}
 
-	items := make([]*mobile_service.MetaKVPair, len(entries))
+	items := make([]*msgrpc.MetaKVPair, len(entries))
 	for i, entry := range entries {
 
 		revStr, err := RevString(entry.Rev)
@@ -264,14 +252,14 @@ func (s *server) MetaKVListAllChildren(context context.Context, metaKVPath *mobi
 			log.Printf("Error converting rev to string: %v", err)
 		}
 
-		items[i] = &mobile_service.MetaKVPair{
-			Path: entry.Path,
-			Rev: revStr,
+		items[i] = &msgrpc.MetaKVPair{
+			Path:  entry.Path,
+			Rev:   revStr,
 			Value: entry.Value,
 		}
 	}
 
-	metakvPairs := mobile_service.MetaKVPairs{
+	metakvPairs := msgrpc.MetaKVPairs{
 		Items: items,
 	}
 
@@ -279,7 +267,7 @@ func (s *server) MetaKVListAllChildren(context context.Context, metaKVPath *mobi
 
 }
 
-func (s *server) MetaKVObserveChildren(metaKVPath *mobile_service.MetaKVPath, stream mobile_service.MobileService_MetaKVObserveChildrenServer) (error) {
+func (s *server) MetaKVObserveChildren(metaKVPath *msgrpc.MetaKVPath, stream msgrpc.MobileService_MetaKVObserveChildrenServer) error {
 
 	keyChangedCallback := func(path string, value []byte, rev interface{}) error {
 
@@ -291,10 +279,9 @@ func (s *server) MetaKVObserveChildren(metaKVPath *mobile_service.MetaKVPath, st
 
 		log.Printf("RunObserveChildren(%s) called back for path %s.  Val: %s.  Rev: %v", metaKVPath.Path, path, string(value), revStr)
 
-
-		metaKvReply := mobile_service.MetaKVPair{
-			Path: path,
-			Rev: revStr,
+		metaKvReply := msgrpc.MetaKVPair{
+			Path:  path,
+			Rev:   revStr,
 			Value: value,
 		}
 
@@ -303,12 +290,6 @@ func (s *server) MetaKVObserveChildren(metaKVPath *mobile_service.MetaKVPath, st
 
 	cancel := make(chan struct{})
 
-	//go func() {
-	//	if err := metakv.RunObserveChildren(metaKVPath.Path, keyChangedCallback, cancel); err != nil {
-	//		panic(fmt.Sprintf("Error calling RunObserveChildren(): %v", err))
-	//	}
-	//}()
-
 	// Blocks indefinitely
 	err := metakv.RunObserveChildren(metaKVPath.Path, keyChangedCallback, cancel)
 
@@ -316,7 +297,6 @@ func (s *server) MetaKVObserveChildren(metaKVPath *mobile_service.MetaKVPath, st
 	return err
 
 }
-
 
 func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
 
@@ -344,7 +324,7 @@ func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
 
 	mobileService := NewServer(nodeUuid)
 
-	mobile_service.RegisterMobileServiceServer(s, mobileService)
+	msgrpc.RegisterMobileServiceServer(s, mobileService)
 
 	// Register reflection service on gRPC server.
 	reflection.Register(s)
@@ -353,37 +333,34 @@ func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
 	}
 }
 
-
-
 func DiscoverRev(rev interface{}) {
 
 	log.Printf("Type of rev: %T", rev)
 
 	revBytesTest4, ok := rev.([]byte)
 	if ok {
-		log.Printf("Rev as string4: %v", string(revBytesTest4)  )
+		log.Printf("Rev as string4: %v", string(revBytesTest4))
 	} else {
 		log.Printf("not a []byte")
 	}
 
 	revBytesTest, ok := rev.([]uint8)
 	if ok {
-		log.Printf("Rev as string: %v or %v", bytes.NewBuffer(revBytesTest).String(), string(revBytesTest) )
+		log.Printf("Rev as string: %v or %v", bytes.NewBuffer(revBytesTest).String(), string(revBytesTest))
 	} else {
 		log.Printf("not a []uint8")
 	}
 
 	revBytesTest2, ok := rev.(*[]uint8)
 	if ok {
-		log.Printf("Rev as string2: %v or %v", bytes.NewBuffer(*revBytesTest2).String(), string(*revBytesTest2) )
+		log.Printf("Rev as string2: %v or %v", bytes.NewBuffer(*revBytesTest2).String(), string(*revBytesTest2))
 	} else {
 		log.Printf("not a *[]uint8")
 	}
 
-
 	revBytesTest3, ok := rev.(*[]byte)
 	if ok {
-		log.Printf("Rev as string3: %v or %v", bytes.NewBuffer(*revBytesTest3).String(), string(*revBytesTest3) )
+		log.Printf("Rev as string3: %v or %v", bytes.NewBuffer(*revBytesTest3).String(), string(*revBytesTest3))
 	} else {
 		log.Printf("not a *[]byte")
 	}
