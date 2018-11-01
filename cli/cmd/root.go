@@ -32,26 +32,26 @@ var rootCmd = &cobra.Command{
 		fmt.Printf("Mobile-service starting up.  NodeUUID: %s CouchbaseServerURL: %s.  DataDir: %v\n", NodeUUID, CouchbaseServerURL, DataDir)
 
 		// Start service manager
-		hostport, err := mobile_mds.StripHttpScheme(CouchbaseServerURL)
+		hostport, err := mobile_service.StripHttpScheme(CouchbaseServerURL)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))
 		}
 
-		grpcPort, err := mobile_mds.CalculateGrpcPort(hostport)
+		grpcPort, err := mobile_service.CalculateGrpcPort(hostport)
 		fmt.Printf("Calculated grpc port to be: %v", grpcPort)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))
 		}
 
 		// Start GRPC server
-		go mobile_mds.StartGrpcServer(service.NodeID(NodeUUID), grpcPort)
+		go mobile_service.StartGrpcServer(service.NodeID(NodeUUID), grpcPort)
 
-		hostportOffset, err := mobile_mds.AddPortOffset(hostport, 100)
+		hostportOffset, err := mobile_service.AddPortOffset(hostport, 100)
 		if err != nil {
 			panic(fmt.Sprintf("ServiceManager error: %v", err))
 		}
-		mobile_mds.InitNode(service.NodeID(service.NodeID(NodeUUID)), hostportOffset)
-		mobile_mds.RegisterManager() // Blocks forever
+		mobile_service.InitNode(service.NodeID(service.NodeID(NodeUUID)), hostportOffset)
+		mobile_service.RegisterManager() // Blocks forever
 
 	},
 }
