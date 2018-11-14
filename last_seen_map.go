@@ -6,7 +6,6 @@ import (
 )
 
 type LastSeenMap struct {
-
 	mutex *sync.Mutex
 
 	lastSeen map[string]time.Time
@@ -15,7 +14,7 @@ type LastSeenMap struct {
 func NewLastSeenMap() *LastSeenMap {
 
 	return &LastSeenMap{
-		mutex: &sync.Mutex{},
+		mutex:    &sync.Mutex{},
 		lastSeen: map[string]time.Time{},
 	}
 
@@ -29,7 +28,6 @@ func (l *LastSeenMap) UpdateLastSeen(keypath string) {
 	l.lastSeen[keypath] = time.Now()
 
 }
-
 
 func (l *LastSeenMap) StaleEntries(maxStale time.Duration) (staleEntries []string) {
 
@@ -58,4 +56,3 @@ func (l *LastSeenMap) DeleteEntries(keys []string) {
 	}
 
 }
-

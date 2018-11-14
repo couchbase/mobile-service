@@ -69,30 +69,30 @@ func (s *server) DeleteStaleGatewayEntries() {
 
 func (s *server) SendStats(stream msgrpc.MobileService_SendStatsServer) error {
 	for {
-		stats, err := stream.Recv()
+		stats, streamRecvErr := stream.Recv()
 
 		log.Printf("GrpcServer SendStats() stream received stats: %v.", stats)
 
-		if err != nil {
+		if streamRecvErr != nil {
 			// TODO: There should be a pre-existing association of the stream with the nodeuuid
 			// TODO: and then at this point it could lookup the node id based on the stream, and immediately
 			// TODO: remove presence status from MetaKV.  (it will still get cleaned up w/o this, but this
 			// TODO: would decrease latency)
-			log.Printf("GrpcServer SendStats() received err: %v.", err)
-			return err
+			log.Printf("GrpcServer SendStats() received err: %v.", streamRecvErr)
+			return streamRecvErr
 		}
 
 		// Authentication
-		creds, err := cbauth.Auth(stats.Creds.Username, stats.Creds.Password)
-		if err != nil {
-			log.Printf("GrpcServer auth err: %v.", err)
+		creds, cbAuthErr := cbauth.Auth(stats.Creds.Username, stats.Creds.Password)
+		if cbAuthErr != nil {
+			log.Printf("GrpcServer auth err: %v.", cbAuthErr)
 			continue
 		}
 
 		// Check permissions
-		allowed, err := creds.IsAllowed("cluster.settings!write")
-		if err != nil {
-			log.Printf("GrpcServer auth err checking permissions: %v.", err)
+		allowed, credsErr := creds.IsAllowed("cluster.settings!write")
+		if credsErr != nil {
+			log.Printf("GrpcServer auth err checking permissions: %v.", credsErr)
 			continue
 		}
 		if !allowed {
@@ -100,18 +100,19 @@ func (s *server) SendStats(stream msgrpc.MobileService_SendStatsServer) error {
 			continue
 		}
 
-		if err := s.RecordClientHeartbeat(stats); err != nil {
-			log.Printf("Error recording client heartbeat: %v", err)
+		// Record heartbeat
+		heartBeatErr := s.RecordClientHeartbeat(stats)
+
+		// Handle errors
+		if heartBeatErr != nil {
+			if heartBeatErr == io.EOF {
+				return stream.SendAndClose(&msgrpc.StatsReply{})
+			}
+			return heartBeatErr
 		}
-		if err == io.EOF {
-			return stream.SendAndClose(&msgrpc.StatsReply{})
-		}
-		if err != nil {
-			return err
-		}
+
 	}
 
-	return nil
 }
 
 func (s *server) RecordClientHeartbeat(stats *msgrpc.Stats) error {

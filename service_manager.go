@@ -105,8 +105,7 @@ func NewMgr() *Mgr {
 
 	go mgr.tokenMapStreamReader()
 
-	httpAPI := HTTPAPI{mgr, cache}
-	go httpAPI.ListenAndServe()
+	_ = HTTPAPI{mgr, cache}
 
 	return mgr
 }
@@ -162,12 +161,12 @@ func (m *Mgr) GetTaskList(rev service.Revision,
 
 	log.Printf("GetTaskList called, rev: %v cancel: %v", rev, cancel)
 
-	state, err := m.wait(rev, cancel)
+	curState, err := m.wait(rev, cancel)
 	if err != nil {
 		return nil, err
 	}
 
-	taskList := stateToTaskList(state)
+	taskList := stateToTaskList(curState)
 
 	log.Printf("GetTaskList returning: %+v", taskList)
 
@@ -212,12 +211,12 @@ func (m *Mgr) GetCurrentTopology(rev service.Revision,
 
 	log.Printf("ServiceManager.GetCurrentTopology() called rev: %+v", rev)
 
-	state, err := m.wait(rev, cancel)
+	curState, err := m.wait(rev, cancel)
 	if err != nil {
 		return nil, err
 	}
 
-	topology := stateToTopology(state)
+	topology := stateToTopology(curState)
 	fmt.Printf("GetCurrentTopology() returning: %+v", topology)
 	return topology, nil
 }

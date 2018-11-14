@@ -6,7 +6,7 @@ import "github.com/couchbase/cbauth/service"
 
 func NewTaskList(rev service.Revision) *service.TaskList {
 	taskList := service.TaskList{
-		Rev: rev,
+		Rev:   rev,
 		Tasks: []service.Task{},
 	}
 	return &taskList
