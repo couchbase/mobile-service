@@ -19,6 +19,7 @@ const (
 	KeyMobileGatewayListener  = "/mobile/gateway/config/listener"
 	KeyMobileGatewayGeneral   = "/mobile/gateway/config/general"
 	KeyMobileGatewayDatabases = "/mobile/gateway/config/databases"
+	KeyMobileState            = "/mobile/state"
 )
 
 var (

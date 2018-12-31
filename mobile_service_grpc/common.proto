@@ -1,0 +1,6 @@
+
+syntax = "proto3";
+
+package mobile_service_grpc;
+
+message Empty {}

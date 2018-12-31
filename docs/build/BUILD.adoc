@@ -3,35 +3,65 @@
 :toclevels: 3
 
 
-== Local Build
+== Build Couchbase Server + Mobile Service
+
+See `BUILD_MERCURY.adoc` in the Sync Gateway repo (Mercury branch)
+
+
+== Regenerate Go code from .proto files
+
+=== Install protoc (one-time)
+
+Based on https://medium.com/@erika_dike/installing-the-protobuf-compiler-on-a-mac-a0d397af46b8:[these instructions]
 
 ```
-$ repo init -u git://github.com/couchbase/manifest -m branch-master.xml
-$ repo sync
-$ make
+$ brew install autoconf && brew install automake && brew install libtool
+$ wget https://github.com/protocolbuffers/protobuf/releases/download/v3.6.1/protobuf-all-3.6.1.tar.gz
+$ tar xvfz protobuf-all-3.6.1.tar.gz
+$ cd protobuf-all-3.6.1
+$ ./autogen.sh && ./configure && make
+$ sudo make install
 ```
 
-Hack the top level `CMakeLists.txt` file to add:
+Verify
 
 ```
-ADD_SUBDIRECTORY(goproj/src/github.com/couchbase/mobile-service)
+$ protoc --version
+libprotoc 3.6.1
 ```
 
-Then build:
+=== Install golang/protobuf (one-time)
+
+
+The `protoc-gen-go` binary will need to be on the `PATH` in order to run the `run_protoc.sh` script.
+
+Since this is part of the `github.com/golang/protobuf` repo, which is already included in the Couchbase Manifest, the best way to install the binary is to install it from the source already on the `GOPATH`
+
+==== Add godeps/bin directory to $PATH
 
 ```
-$ make -j 6
+$ export PATH=$PATH:/path/to/couchbase/src/godeps/bin
 ```
 
-See https://github.com/couchbase/tlm for instructions
+==== Go install
+
+First set your `GOPATH` to include the directories that contain the Couchbase go projects + dependencies:
+
+```
+$ export GOPATH=/path/to/couchbase/src/godeps:/path/to/couchbase/src/goproj
+```
+
+Run `go install`:
 
 
-== Toy Build (Jenkins)
+```
+$ go install github.com/golang/protobuf/protoc-gen-go
+```
 
-. Go to http://server.jenkins.couchbase.com/view/Toys/job/toy-unix
-. Build with Parameters
-. Use params
-.. RELEASE: mad-hatter
-.. VERSION: 6.5.0
-.. MANIFEST_FILE: couchbase-server/mad-hatter.xml
-.. MANIFEST_REPO: git://github.com/couchbase/manifest (unless you want to point to your own fork)
+You should now have a `protoc-gen-go` binary in `/path/to/couchbase/src/godeps/bin`
+
+=== Regenerate
+
+```
+$ ./run_protoc.sh
+```

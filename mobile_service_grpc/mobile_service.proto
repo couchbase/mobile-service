@@ -3,6 +3,9 @@ syntax = "proto3";
 
 package mobile_service_grpc;
 
+import "common.proto";
+
+
 service MobileService {
 
   rpc MetaKVGet(MetaKVPath) returns (MetaKVPair) {}
@@ -53,7 +56,6 @@ message Stats {
 
 message StatsReply {}
 
-message Empty {}
 
 
 message MetaKVPath {

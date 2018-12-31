@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package mobile_service_grpc;
+
+import "common.proto";
+
+// Expose functionality that will eventually end up in the Couchbase Server Admin UI.
+// In the meantime, this could support a CLI client to do things like:
+//     - Import/Export config
+//     - List Sync Gateway nodes
+//     - List Databases
+
+service MobileServiceAdmin {
+
+  rpc ImportConfig(ConfigJson) returns (Empty) {}
+
+  rpc ExportConfig(Empty) returns (ConfigJson) {}
+
+  rpc ListSyncGateways(Empty) returns (SyncGateways) {}
+
+}
+
+message ConfigJson {
+
+  string body = 1;
+
+}
+
+
+message SyncGateway {
+
+    string SyncGatewayUUID = 1;
+
+    string LastSeenTimestamp = 2;
+
+}
+
+message SyncGateways {
+
+    repeated SyncGateway items = 1;
+
+}
