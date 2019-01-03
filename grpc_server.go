@@ -9,7 +9,6 @@ import (
 	"github.com/couchbase/cbauth/service"
 	msgrpc "github.com/couchbase/mobile-service/mobile_service_grpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 )
 
 func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
@@ -44,11 +43,6 @@ func StartGrpcServer(nodeUuid service.NodeID, grpcListenPort int) {
 	// Start the Admin service that an Admin CLI would connect to.
 	mobileServiceAdmin := NewMobileServiceAdmin(nodeUuid)
 	msgrpc.RegisterMobileServiceAdminServer(s, mobileServiceAdmin)
-
-	// Register reflection service on gRPC server.  I believe this is only needed for
-	// tools like grpc-curl.  It might have security implications, so should probably
-	// be changed to opt-in.
-	reflection.Register(s)
 
 	// Start the grpc server
 	if err := s.Serve(listener); err != nil {

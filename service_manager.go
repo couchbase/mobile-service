@@ -899,6 +899,7 @@ func (r *Rebalancer) doRebalance() {
 		r.fakeProgress()
 	}
 
+	// Mobile-service specific call
 	r.removeDeadNodesMetaKV()
 
 	r.updateHostNames()
@@ -924,6 +925,7 @@ func (r *Rebalancer) fakeProgress() {
 	}
 }
 
+// Mobile-service specific behavior
 func (r *Rebalancer) removeDeadNodesMetaKV() {
 
 	log.Printf("Rebalancer removeDeadNodesMetaKV() called")
