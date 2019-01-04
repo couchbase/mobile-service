@@ -34,7 +34,7 @@ var (
 )
 
 const (
-	ServiceDir    = "/mobile-service/"
+	ServiceDir    = "/mobile-service-cache-demo/"
 	TokensPerNode = 256
 	TokensKey     = ServiceDir + "tokens"
 )
