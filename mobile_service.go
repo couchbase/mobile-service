@@ -270,20 +270,20 @@ func (s *mobileService) MetaKVListAllChildren(context context.Context, metaKVPat
 
 func (s *mobileService) MetaKVObserveChildren(metaKVPath *msgrpc.MetaKVPath, stream msgrpc.MobileService_MetaKVObserveChildrenServer) error {
 
-	keyChangedCallback := func(path string, value []byte, rev interface{}) error {
+	keyChangedCallback := func(kve metakv.KVEntry) error {
 
-		revStr, err := RevString(rev)
+		revStr, err := RevString(kve.Rev)
 		if err != nil {
-			log.Printf("RunObserveChildren(%s) Error converting rev to a string: Rev: %v. Type(rev): %T, Err: %v", path, rev, rev, err)
+			log.Printf("RunObserveChildren(%s) Error converting rev to a string: Rev: %v. Type(rev): %T, Err: %v", kve.Path, kve.Rev, kve.Rev, err)
 			return err
 		}
 
-		log.Printf("RunObserveChildren(%s) called back for path %s.  Val: %s.  Rev: %v", metaKVPath.Path, path, string(value), revStr)
+		log.Printf("RunObserveChildren(%s) called back for path %s.  Val: %s.  Rev: %v", metaKVPath.Path, kve.Path, string(kve.Value), revStr)
 
 		metaKvReply := msgrpc.MetaKVPair{
-			Path:  path,
+			Path:  kve.Path,
 			Rev:   revStr,
-			Value: value,
+			Value: kve.Value,
 		}
 
 		return stream.Send(&metaKvReply)
@@ -292,7 +292,7 @@ func (s *mobileService) MetaKVObserveChildren(metaKVPath *msgrpc.MetaKVPath, str
 	cancel := make(chan struct{})
 
 	// Blocks indefinitely
-	err := metakv.RunObserveChildren(metaKVPath.Path, keyChangedCallback, cancel)
+	err := metakv.RunObserveChildrenV2(metaKVPath.Path, keyChangedCallback, cancel)
 
 	// Should never get her
 	return err
